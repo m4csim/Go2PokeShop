@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,7 +15,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", rootPage)
-	router.HandleFunc("/pokemons/", pokemons).Methods("GET")
+	router.HandleFunc("/pokemons", pokemons).Methods("GET")
 
 	fmt.Println("Serving @ http://127.0.0.1" + port)
 	log.Fatal(http.ListenAndServe(port, router))
@@ -42,4 +43,12 @@ func pokemons(w http.ResponseWriter, r *http.Request) {
 		pokemon{2, "Terre", "Ivysaur", 60, 62, "Psychoboost", 50.00, 4},
 		pokemon{3, "Terre", "Venusaur", 80, 82, "Overheat", 50.00, 4},
 	}
+	b, err := json.Marshal(pokemonList)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+
+	w.Write([]byte(b))
+
 }
