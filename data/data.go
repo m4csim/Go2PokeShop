@@ -1,15 +1,10 @@
 package data
 
 // les infos finales que l'on veut ajouter
-type WPokemon struct {
-	Id      int
-	Type    string
-	Name    string
-	Hpoint  int
-	Pattack int
-	Smove   string
-	Price   float64
+type StockPokemon struct {
+	Price   int
 	Count   int
+	Pokemon Pokemon
 }
 
 // Extraction des infos d'un simple pokémon
