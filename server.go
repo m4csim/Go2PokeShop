@@ -27,8 +27,8 @@ func rootPage(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("This is not the root page"))
 }
 
-func lego() (result data.WPokemon, err error) {
-	err = req.Do("pokemon", &result)
+func lego() (result data.Pokemon, err error) {
+	err = req.Do("pokemon/132", &result)
 	return result, err
 }
 
