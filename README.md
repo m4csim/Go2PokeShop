@@ -1,2 +1,1 @@
-# Go2PokeShop
-GoLand API from PokeAPI
+# Go2PokeShop GoLand API from PokeAPI

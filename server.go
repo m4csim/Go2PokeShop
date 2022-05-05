@@ -27,28 +27,21 @@ func rootPage(w http.ResponseWriter, r *http.Request) {
 
 func pokemons(w http.ResponseWriter, r *http.Request) {
 
-	type pokemon struct {
-		Id      int
-		Type    string
-		Name    string
-		Hpoint  int
-		Pattack int
-		Smove   string
-		Price   float64
-		Count   int
+	// resp, err := http.Get("https://pokeapi.co/api/v2/pokemon")
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+
+	var pokemonList = []data.pokemon{
+		data.pokemon{1, "Terre", "Bulbasaur", 45, 49, "Mist-Ball", 50.00, 4},
+		data.pokemon{2, "Terre", "Ivysaur", 60, 62, "Psychoboost", 50.00, 4},
+		data.pokemon{3, "Terre", "Venusaur", 80, 82, "Overheat", 50.00, 4},
 	}
 
-	var pokemonList = []pokemon{
-		pokemon{1, "Terre", "Bulbasaur", 45, 49, "Mist-Ball", 50.00, 4},
-		pokemon{2, "Terre", "Ivysaur", 60, 62, "Psychoboost", 50.00, 4},
-		pokemon{3, "Terre", "Venusaur", 80, 82, "Overheat", 50.00, 4},
-	}
 	b, err := json.Marshal(pokemonList)
-
+	print(b)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
-
 	w.Write([]byte(b))
-
 }
