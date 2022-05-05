@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/m4csim/Go2PokeShop/data"
-
 	"github.com/gorilla/mux"
+	"github.com/m4csim/Go2PokeShop/data"
+	"github.com/m4csim/Go2PokeShop/req"
 )
 
 const port = ":5500"
@@ -27,20 +27,26 @@ func rootPage(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("This is not the root page"))
 }
 
-func pokemons(w http.ResponseWriter, r *http.Request) {
+func lego() (result data.WPokemon, err error) {
+	err = req.Do("pokemon", &result)
+	return result, err
+}
 
-	// resp, err := http.Get("https://pokeapi.co/api/v2/pokemon")
+func pokemons(w http.ResponseWriter, r *http.Request) {
+	// res := data.Pokemon
+	// res := new interface
+	res, err := lego()
 	// if err != nil {
 	// 	log.Fatalln(err)
 	// }
 
-	var pokemonList = []data.Pokemon{
-		data.Pokemon{1, "Terre", "Bulbasaur", 45, 49, "Mist-Ball", 50.00, 4},
-		data.Pokemon{2, "Terre", "Ivysaur", 60, 62, "Psychoboost", 50.00, 4},
-		data.Pokemon{3, "Terre", "Venusaur", 80, 82, "Overheat", 50.00, 4},
-	}
+	// var pokemonList = []data.Pokemon{
+	// 	data.Pokemon{1, "Terre", "Bulbasaur", 45, 49, "Mist-Ball", 50.00, 4},
+	// 	data.Pokemon{2, "Terre", "Ivysaur", 60, 62, "Psychoboost", 50.00, 4},
+	// 	data.Pokemon{3, "Terre", "Venusaur", 80, 82, "Overheat", 50.00, 4},
+	// }
 
-	b, err := json.Marshal(pokemonList)
+	b, err := json.Marshal(res)
 	print(b)
 	if err != nil {
 		fmt.Println("Error:", err)

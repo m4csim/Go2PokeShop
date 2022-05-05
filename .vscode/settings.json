@@ -1,5 +1,10 @@
 {
     "go.alternateTools": {
         "go": "."
+    },
+    "[go]": {
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": false,
+    },
     }
 }
