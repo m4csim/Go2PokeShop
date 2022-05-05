@@ -1,4 +1,4 @@
-package mongoconnect
+package database
 
 import (
 	"context"
@@ -14,32 +14,7 @@ import (
 	"time"
 )
 
-func CheckConnect() {
-
-	/*
-	   Connect to my cluster
-	*/
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://root:example@127.0.0.1:27017/"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Disconnect(ctx)
-
-	/*
-	   List databases
-	*/
-	databases, err := client.ListDatabaseNames(ctx, bson.M{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(databases)
-
-}
+var DB *mongo.Client
 
 func Recreate_db() {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://root:example@127.0.0.1:27017/"))
@@ -86,6 +61,48 @@ func Fixtures_db() {
 }
 
 func generate(id int) (result data.StockPokemon, err error) {
-	err = req.Do(fmt.Sprintf("pokemon/%d", id), &result.Pokemon)
+	err = req.Do(fmt.Sprintf("pokemon/%d", id), &result)
 	return result, err
+}
+
+func Get_one_pokemon(name string) data.StockPokemon {
+	stock_collection := MI.DB.Collection("stocks")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	var pokemon_stock data.StockPokemon
+	filter := bson.M{"name": name}
+	find_result := stock_collection.FindOne(ctx, filter)
+	if err := find_result.Err(); err != nil {
+		return data.StockPokemon{}
+	}
+	err := find_result.Decode(&pokemon_stock)
+	if err != nil {
+		return data.StockPokemon{}
+	}
+	return pokemon_stock
+}
+
+func Get_all_pokemon() []data.StockPokemonView {
+	stock_collection := MI.DB.Collection("stocks")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	var pokemon_stocks []data.StockPokemonView
+	cursor, err := stock_collection.Find(ctx, bson.M{})
+	defer cursor.Close(ctx)
+	if err != nil {
+		return []data.StockPokemonView{}
+	}
+	for cursor.Next(ctx) {
+		var StockPokemon data.StockPokemon
+		var MinifiedPokemon data.MinifiedPokemon
+		cursor.Decode(&StockPokemon)
+		req.Do(fmt.Sprintf("pokemon/%s", StockPokemon.Name), &MinifiedPokemon)
+		poke := &data.StockPokemonView{
+			Pokemon:      MinifiedPokemon,
+			StockPokemon: StockPokemon,
+		}
+
+		pokemon_stocks = append(pokemon_stocks, *poke)
+
+	}
+
+	return pokemon_stocks
 }

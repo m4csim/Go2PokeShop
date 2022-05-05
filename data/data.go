@@ -1,14 +1,26 @@
 package data
 
+type StockPokemonView struct {
+	Pokemon MinifiedPokemon
+	StockPokemon
+}
+
 // les infos finales que l'on veut ajouter
 type StockPokemon struct {
-	Price   int
-	Count   int
-	Pokemon Pokemon
+	Price int
+	Count int
+	Name  string
+	// Pokemon Pokemon
+}
+type MinifiedPokemon struct {
+	Name    string
+	Sprites struct {
+		FrontDefault string `json:"front_default"`
+	} `json:"sprites"`
 }
 
 // Extraction des infos d'un simple pokémon
-type Pokemon struct {
+type DetailedPokemon struct {
 	Abilities []struct {
 		Ability struct {
 			Name string `json:"name"`

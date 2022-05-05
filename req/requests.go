@@ -2,6 +2,7 @@ package req
 
 import (
 	"encoding/json"
+	//"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -39,7 +40,6 @@ func Do(endpoint string, obj interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	setCache(endpoint, body)
 	return json.Unmarshal(body, &obj)
 }
