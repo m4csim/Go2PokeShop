@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/m4csim/Go2PokeShop/data"
+
 	"github.com/gorilla/mux"
 )
 
@@ -32,10 +34,10 @@ func pokemons(w http.ResponseWriter, r *http.Request) {
 	// 	log.Fatalln(err)
 	// }
 
-	var pokemonList = []data.pokemon{
-		data.pokemon{1, "Terre", "Bulbasaur", 45, 49, "Mist-Ball", 50.00, 4},
-		data.pokemon{2, "Terre", "Ivysaur", 60, 62, "Psychoboost", 50.00, 4},
-		data.pokemon{3, "Terre", "Venusaur", 80, 82, "Overheat", 50.00, 4},
+	var pokemonList = []data.Pokemon{
+		data.Pokemon{1, "Terre", "Bulbasaur", 45, 49, "Mist-Ball", 50.00, 4},
+		data.Pokemon{2, "Terre", "Ivysaur", 60, 62, "Psychoboost", 50.00, 4},
+		data.Pokemon{3, "Terre", "Venusaur", 80, 82, "Overheat", 50.00, 4},
 	}
 
 	b, err := json.Marshal(pokemonList)

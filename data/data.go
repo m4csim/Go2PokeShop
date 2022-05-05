@@ -1,6 +1,6 @@
 package data
 
-type pokemon struct {
+type Pokemon struct {
 	Id      int
 	Type    string
 	Name    string
