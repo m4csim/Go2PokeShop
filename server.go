@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	// "github.com/m4csim/Go2PokeShop/data"
 	"github.com/m4csim/Go2PokeShop/data"
 	"github.com/m4csim/Go2PokeShop/database"
@@ -23,16 +25,20 @@ func main() {
 	//
 	//connect
 	database.ConnectDB()
+	// credentials := handlers.AllowCredentials()
+	// methods := handlers.AllowedMethods([]string{"POST"})
+	// origins := handlers.AllowedOrigins([]string{"www.example.com"})
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", rootPage)
 	router.HandleFunc("/pokemons", all_pokemons).Methods("GET")
-	router.HandleFunc("/pokemons/{pokemon}", pokemons).Methods("GET", "POST")
+	router.HandleFunc("/pokemons/{pokemon}", pokemons).Methods("GET")
+	router.HandleFunc("/pokemons/{pokemon}/{number}", buy_pokemons).Methods("GET")
 	router.HandleFunc("/restock", restock).Methods("GET")
 	router.HandleFunc("/dropcoll", drop_collec).Methods("GET")
-
+	handler := cors.Default().Handler(router)
 	fmt.Println("Serving @ http://127.0.0.1" + port)
-	log.Fatal(http.ListenAndServe(port, router))
+	log.Fatal(http.ListenAndServe(port, handler))
 }
 
 func rootPage(w http.ResponseWriter, r *http.Request) {
@@ -71,6 +77,29 @@ func pokemons(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			w.Write(json_response)
+		}
+	} else {
+		w.Write([]byte("not found"))
+	}
+}
+
+func buy_pokemons(w http.ResponseWriter, r *http.Request) {
+	pokemon := mux.Vars(r)["pokemon"]
+	number := mux.Vars(r)["number"]
+	result := database.Get_one_pokemon(pokemon)
+	fmt.Println(result)
+	if result.Name != "" {
+		if res, _ := strconv.Atoi(number); result.Count > res {
+			new_count := result.Count - res
+			res := database.Destock_pokemon(pokemon, new_count)
+			fmt.Println(res)
+			if res != nil {
+				w.Write([]byte("true"))
+			} else {
+				w.Write([]byte("false"))
+			}
+		} else {
+			w.Write([]byte("cannot buy that much"))
 		}
 	} else {
 		w.Write([]byte("not found"))

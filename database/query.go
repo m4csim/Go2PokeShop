@@ -36,27 +36,16 @@ func Recreate_db() {
 }
 
 func Fixtures_db() {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://root:example@127.0.0.1:27017/"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	stock_collection := MI.DB.Collection("stocks")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Disconnect(ctx)
-
-	database := client.Database("pokeshop")
-	stocks := database.Collection("stocks")
 	for i := 0; i < 100; i++ {
-		res, _ := generate(rand.Intn(500))
+		res, _ := generate(rand.Intn(500) + rand.Intn(300) + 1)
 		res.Count = rand.Intn(7)
 		res.Price = rand.Intn(150)
 		//res2B, _ := json.Marshal(res.Pokemon)
 		//fmt.Println(string(res2B))
 		//b, _ := json.Marshal(res)
-		stocks.InsertOne(ctx, res)
+		stock_collection.InsertOne(ctx, res)
 	}
 }
 
@@ -105,4 +94,18 @@ func Get_all_pokemon() []data.StockPokemonView {
 	}
 
 	return pokemon_stocks
+}
+
+func Destock_pokemon(name string, new_count int) *mongo.UpdateResult {
+	stock_collection := MI.DB.Collection("stocks")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	//var pokemon_stock data.StockPokemon
+	filter := bson.M{"name": name}
+	pof, object := stock_collection.UpdateOne(
+		ctx,
+		filter,
+		bson.M{"$set": bson.M{"count": new_count}},
+	)
+	fmt.Println(object)
+	return pof
 }

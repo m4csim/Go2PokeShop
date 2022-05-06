@@ -7,6 +7,7 @@ type StockPokemonView struct {
 
 // les infos finales que l'on veut ajouter
 type StockPokemon struct {
+	ID    int `json:"id"`
 	Price int
 	Count int
 	Name  string
@@ -14,6 +15,7 @@ type StockPokemon struct {
 }
 type MinifiedPokemon struct {
 	Name    string
+	ID      int `json:"id"`
 	Sprites struct {
 		FrontDefault string `json:"front_default"`
 	} `json:"sprites"`
